@@ -50,41 +50,33 @@ router.post(
   }
 );
 
-// ROUTE 3: Update an existing note using: PUT "/api/notes/updatenote". Login required
-
+// ROUTE 3: Update an existing note using: PUT "/api/notes/updatenote/:id". Login required
 router.put("/updatenote/:id", fetchuser, async (req, res) => {
   const { title, description, tag } = req.body;
 
   try {
-    //Create a new note
-    const newNote = {};
-    if (title) {
-      newNote.title = title;
-    }
-    if (description) {
-      newNote.description = description;
-    }
-    if (tag) {
-      newNote.tag = tag;
-    }
-    //Find a new note to be updated and update it
+    // Create a new note object to update
+    const updatedNote = {};
+    if (title) updatedNote.title = title;
+    if (description) updatedNote.description = description;
+    if (tag) updatedNote.tag = tag;
+
+    // Check if the note exists
     let note = await Note.findById(req.params.id);
     if (!note) {
-      return res.status(404).send("Not Found");
+      return res.status(404).send("Note not found");
     }
 
+    // Ensure the user owns the note before updating
     if (note.user.toString() !== req.user.id) {
-      return res.status(401).send("Not Allowed");
+      return res.status(401).send("Not authorized to update this note");
     }
 
-    note = await Note.findByIdAndUpdate(
-      req.params.id,
-      { $set: newNote },
-      { new: true }
-    );
+    // Update the note and return the updated note
+    note = await Note.findByIdAndUpdate(req.params.id, { $set: updatedNote }, { new: true });
     res.json({ note });
   } catch (error) {
-    console.log(error.message);
+    console.error(error.message);
     res.status(500).send("Internal server error");
   }
 });

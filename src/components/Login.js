@@ -2,8 +2,8 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 
 const Login = (props) => {
-  const [credentials, setCredentials] = useState({ email: "", password: "" })
   let navigate = useNavigate();
+  const [credentials, setCredentials] = useState({ email: "", password: "" })
   const handleSubmit = async (e) => {
     e.preventDefault();
     const response = await fetch(`http://localhost:5000/api/auth/login`, {
@@ -16,12 +16,13 @@ const Login = (props) => {
     const json = await response.json();
     console.log(json);
     if (json.success) {
-     // Save the auth token and redirect
+      // Save the auth token and redirect
       localStorage.setItem('token', json.authtoken);
+      props.showAlert("Logged in Successfully", "success")
       navigate("/");
     }
-    else{
-      alert("Invalid credentials");
+    else {
+      props.showAlert("Inavlid Details", "danger")
     }
   }
   const onChange = (e) => {
@@ -29,7 +30,8 @@ const Login = (props) => {
   };
 
   return (
-    <div>
+    <div className='mt-2'>
+      <h2>Login to continue to iNotebook </h2>
       <form onSubmit={handleSubmit}>
         <div className="mb-3">
           <label htmlFor="email" className="form-label">Email address</label>

@@ -3,23 +3,33 @@ import noteContext from "./NoteContext";
 
 const NoteState = (props) => {
   const host = "http://localhost:5000";
-  const [notes, setNotes] = useState([]);
+  const notesInitial = [];
+  const [notes, setNotes] = useState(notesInitial);
+  const handleErrors = (response) => {
+    if (!response.ok) {
+      throw new Error(response.statusText);
+    }
+    return response.json();
+  };
 
   //Get all notes
   const getallnotes = async () => {
-    //API call
-    const response = await fetch(`${host}/api/notes/fetchallnotes`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "auth-token":
-          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjY3ZTIxODAxNmJlNjBiMjQ1NWE1MjAxIn0sImlhdCI6MTcxOTU0MjE1Nn0.68NosSb5Nu-yMs51owUV8x3TMpIV1qFXGolN362nLA8",
-      },
-    });
-    const json = await response.json();
-    setNotes(json);
+    //API call     
+    try {
+      const response = await fetch(`${host}/api/notes/fetchallnotes`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "auth-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjY4NmUzMWIzMTk0ZDdhYTJkNjJkMGU1In0sImlhdCI6MTcyMDQ3MzcwNH0.kMCzwO7Svj-y-YJ_wr2JoUv941GbXKvWhqXMx5JoF28"
+        },
+      });
+      const data = await handleErrors(response);
+      setNotes(data);
+    } catch (error) {
+      console.error('Error fetching notes:', error.message);
+      // Handle error (e.g., redirect to login)
+    }
   };
-
   //Add a note
   const addNote = async (title, description, tag) => {
     //API call
@@ -27,8 +37,7 @@ const NoteState = (props) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "auth-token":
-          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjY3ZTIxODAxNmJlNjBiMjQ1NWE1MjAxIn0sImlhdCI6MTcxOTU0MjE1Nn0.68NosSb5Nu-yMs51owUV8x3TMpIV1qFXGolN362nLA8",
+        "auth-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjY4NmUzMWIzMTk0ZDdhYTJkNjJkMGU1In0sImlhdCI6MTcyMDQ3MzcwNH0.kMCzwO7Svj-y-YJ_wr2JoUv941GbXKvWhqXMx5JoF28"
       },
       body: JSON.stringify({ title, description, tag }),
     });
@@ -43,11 +52,11 @@ const NoteState = (props) => {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
-        "auth-token":
-          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjY3ZTIxODAxNmJlNjBiMjQ1NWE1MjAxIn0sImlhdCI6MTcxOTU0MjE1Nn0.68NosSb5Nu-yMs51owUV8x3TMpIV1qFXGolN362nLA8",
+        "auth-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjY4NmUzMWIzMTk0ZDdhYTJkNjJkMGU1In0sImlhdCI6MTcyMDQ3MzcwNH0.kMCzwO7Svj-y-YJ_wr2JoUv941GbXKvWhqXMx5JoF28"
       },
     });
     const json = response.json();
+    console.log(json);
     const newNotes = notes.filter((notes) => {
       return notes._id !== id;
     });
@@ -61,12 +70,12 @@ const NoteState = (props) => {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
-        "auth-token":
-          "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjY3ZTIxODAxNmJlNjBiMjQ1NWE1MjAxIn0sImlhdCI6MTcxOTU0MjE1Nn0.68NosSb5Nu-yMs51owUV8x3TMpIV1qFXGolN362nLA8",
+        "auth-token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoiNjY4NmUzMWIzMTk0ZDdhYTJkNjJkMGU1In0sImlhdCI6MTcyMDQ3MzcwNH0.kMCzwO7Svj-y-YJ_wr2JoUv941GbXKvWhqXMx5JoF28"
       },
       body: JSON.stringify({ title, description, tag }),
     });
     const json = response.json();
+    console.log(json);
 
     const newNotes = JSON.parse(JSON.stringify(notes));
     //Logic to edit in client
